@@ -48,9 +48,9 @@ A `next dev` process left running for a long time can get its Turbopack/Jest-wor
 
 ## MCP
 
-An `aliyun-supabase` MCP server is registered (verify with `claude mcp get aliyun-supabase`) using the official `@aliyun-supabase/mcp-server-supabase` package, pointed at project `sbp-5pigmkitjhop5ipz` / region `cn-shenzhen`, for driving this Supabase project directly from Claude Code.
+An `aliyun-supabase` MCP server can be registered (verify with `claude mcp get aliyun-supabase`) using the official `@aliyun-supabase/mcp-server-supabase` package, pointed at your own Supabase project, for driving this Supabase project directly from Claude Code.
 
-- Registered at **user scope** (`-s user`), not project/local — deliberately, see gotcha below. This means the Aliyun AccessKey it holds is available to every Claude Code project on this machine, not just this one; that trade-off was confirmed with the project owner.
+- The MCP server can be registered at user scope or project scope. At user scope, the credentials it holds are available to every Claude Code project on the machine — register at project scope if you want them isolated to this project.
 - Gotcha: **`-s local` scope is broken for MCP servers on this Windows setup.** `claude mcp add -s local` normalizes the current project path to lowercase-with-forward-slashes when writing it (e.g. `d:/project/tdlst`), but `claude mcp get`/`list`/`remove` resolve the current project via `process.cwd()` verbatim (e.g. `D:\project\tdlst`, uppercase drive letter) — the string comparison never matches, so the server is silently unreachable via any lookup command right after being added with `-s local`. Use `-s user` instead until this is fixed upstream.
 - A freshly-`add`ed MCP server is **not** available as a callable tool inside an already-running Claude Code session — the session needs to be restarted before its tools can actually be used.
 - The first health check after adding a server can show "✘ Failed to connect" even when everything is configured correctly, simply because `npx -y package@latest` needs to download the package on first run, which is slower than the health-check timeout. Retrying `claude mcp get <name>` once npm's cache is warm resolves it.
