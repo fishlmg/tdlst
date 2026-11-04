@@ -29,7 +29,7 @@ This project does not use git (deliberate choice by the owner). Don't run `git i
 - Full loop has been end-to-end tested against real credentials via the running dev server: POST a URL → `extractContent` → Kimi → row inserted into `items` → GET lists it → PATCH toggles `status`. All confirmed working.
 - The Supabase project in use is **not dedicated to this app** — it already contained an unrelated, empty table (`area_occupancy`, columns `id/timestamp/area/is_occupied/created_at/updated_at`, reads like leftover from a room/space-occupancy demo) before this project touched it, and was dropped only after explicit confirmation from the owner (it had 0 rows). If this project's Supabase instance ever gets reused again, don't assume the database starts clean — check what's actually in it before running destructive SQL: `GET {SUPABASE_URL}/rest/v1/` with the service role key returns a PostgREST-generated OpenAPI doc listing every exposed table (and its columns, under `.definitions`), or use the `aliyun-supabase` MCP server's `list_table`.
 - During the SSRF-hardening pass below, a code review surfaced and fixed real bugs in `lib/extract.ts` and `lib/kimi.ts` (see "Security/robustness fixes" below) — re-read that section before touching either file.
-- Next steps are product-driven from here (WeChat share intake, push notifications, etc. per `灵感一.md`) — the Phase 0 manual-paste loop itself is done and verified.
+- Next steps are product-driven from here (WeChat share intake, push notifications, etc. per `docs/product-idea.md`) — the Phase 0 manual-paste loop itself is done and verified.
 
 ### Security/robustness fixes applied to the extract/Kimi pipeline
 
@@ -75,7 +75,7 @@ There's no auth layer yet — API routes use the Supabase **service role** key d
 
 ## Product context
 
-`灵感一.md` (Chinese) is the product/strategy doc — market analysis, phased roadmap, and business model for the broader vision ("turn scattered social-media bookmarks into daily actionable TODOs"). The current code is Phase 0 of that roadmap: manual link paste only.
+`docs/product-idea.md` (Chinese; previously `灵感一.md`) is the product/strategy doc — market analysis, phased roadmap, and business model for the broader vision ("turn scattered social-media bookmarks into daily actionable TODOs"). The current code is Phase 0 of that roadmap: manual link paste only.
 
 Important constraint from that doc: **do not build cookie/signature-reverse-engineering scrapers for Douyin/Xiaohongshu** (e.g. ABogus/x-s/x-t signing). There is real precedent of civil (unfair-competition, ¥4.9M damages) and criminal liability in China for exactly this pattern at commercial scale. The planned collection paths for platforms without an official OAuth API are: user-initiated share/forward (e.g. to a WeChat official account) or manual paste — never automated background scraping. Bilibili is the exception *if* an OAuth app gets approved (unconfirmed — Bilibili's open platform appears geared toward institutional/MCN accounts, not confirmed to support individual developers or a favorites-read scope); until confirmed, treat Bilibili the same as Douyin/Xiaohongshu (share/paste only).
 
